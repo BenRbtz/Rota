@@ -1,0 +1,10 @@
+setup.py
+src/generate/__init__.py
+src/generate/calender.py
+src/generate/rota.py
+src/generate/spreadsheet.py
+src/rota.egg-info/PKG-INFO
+src/rota.egg-info/SOURCES.txt
+src/rota.egg-info/dependency_links.txt
+src/rota.egg-info/requires.txt
+src/rota.egg-info/top_level.txt
