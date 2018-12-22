@@ -1,5 +1,6 @@
-venv
+venv/
 .idea/
 .DS_Store
 *.xlsx
-.pytest_cache
+.pytest_cache/
+__pycache__/
