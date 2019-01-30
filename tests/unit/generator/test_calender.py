@@ -8,24 +8,31 @@ class TestCalender:
     def generate(self):
         return Calender()
 
-    @pytest.mark.parametrize('month_name, expected', [
-        ('January', [
+    @pytest.mark.parametrize('year, month_name, expected', [
+        (2018, 'January', [
             ('2nd', '5th'),
             ('9th', '12th'),
             ('16th', '19th'),
             ('23rd', '26th'),
             ('30th', '')
         ]),
-        ('november', [
+        (2018, 'november', [
             ('', '2nd'),
             ('6th', '9th'),
             ('13th', '16th'),
             ('20th', '23rd'),
             ('27th', '30th')
         ]),
+        (2019, 'february', [
+            ('', '1st'),
+            ('5th', '8th'),
+            ('12th', '15th'),
+            ('19th', '22nd'),
+            ('26th', '')
+        ]),
     ])
-    def test_get_days_in_month(self, generate, month_name, expected):
-        actual = list(generate.get_days_in_month(2018, month_name, 'tuesday', 'friday'))
+    def test_get_days_in_month(self, generate, year, month_name, expected):
+        actual = list(generate.get_days_in_month(year, month_name, 'tuesday', 'friday'))
         assert expected == actual
 
     def test_get_days_in_month_when_day_names_in_wrong_order(self, generate):
@@ -77,9 +84,15 @@ class TestCalender:
         expected = "Month name 'wrong_val' not valid"
         assert expected == str(err_info.value)
 
-    def test_get_date(self, generate):
-        expected = ['6th', '13th', '20th', '27th']
-        actual = generate.get_date(2018, 11, 8)
+    def test_get_dates(self, generate):
+        expected = [6, 13, 20, 27]
+        actual = generate.get_dates(2018, 11, 8)
+        assert expected == actual
+
+    def test_format_date_with_suffix(self, generate):
+        expected = ['1st', '2nd', '3rd', '4th', '30th']
+        input_list = [1, 2, 3, 4, 30]
+        actual = generate.format_dates_with_suffix(input_list)
         assert expected == actual
 
     @pytest.mark.parametrize('day_num, expected', [
