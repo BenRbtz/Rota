@@ -13,7 +13,13 @@ COPY requirements/src.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt \
     && rm requirements.txt
 
-COPY . /app
+COPY src /app/src/
+
+COPY app.py setup.py /app/
+
+RUN pip install --no-cache-dir -e .
+
+ENTRYPOINT ["python", "app.py"]
 
 
 FROM app as tests
@@ -22,3 +28,5 @@ COPY requirements/tests.txt /app/requirements.txt
 
 RUN pip install --no-cache-dir -r requirements.txt \
     && rm requirements.txt
+
+COPY tests /app/tests/
