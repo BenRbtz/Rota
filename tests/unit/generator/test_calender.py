@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import pytest
 
 from generate.calender import Calender
@@ -8,38 +10,48 @@ class TestCalender:
     def generate(self):
         return Calender()
 
-    @pytest.mark.parametrize('year, month_name, expected', [
-        (2018, 'January', [
-            ('2nd', '5th'),
-            ('9th', '12th'),
-            ('16th', '19th'),
-            ('23rd', '26th'),
-            ('30th', '')
+    @pytest.mark.parametrize('year, month_name, day_names, expected', [
+        (2018, 'January', ['tuesday', 'friday'], [
+            {'tuesday', 'friday'},
+            2018,
+            1
         ]),
-        (2018, 'november', [
-            ('', '2nd'),
-            ('6th', '9th'),
-            ('13th', '16th'),
-            ('20th', '23rd'),
-            ('27th', '30th')
+        (2018, 'november', ['tuesday', 'friday', 'Friday'], [
+            {'tuesday', 'friday'},
+            2018,
+            11
         ]),
-        (2019, 'february', [
-            ('', '1st'),
-            ('5th', '8th'),
-            ('12th', '15th'),
-            ('19th', '22nd'),
-            ('26th', '')
+        (2019, 'february', ['friday', 'tuesday'], [
+            {'friday', 'tuesday'},
+            2019,
+            2
         ]),
     ])
-    def test_get_days_in_month(self, generate, year, month_name, expected):
-        actual = list(generate.get_days_in_month(year, month_name, 'tuesday', 'friday'))
-        assert expected == actual
+    def test_get_days_in_month(self, generate, mocker, year, month_name, day_names, expected):
+        mocker.patch.object(generate, '_get_mapped_day_names')
+        generate.get_days_in_month(year, month_name, day_names)
+        generate._get_mapped_day_names.assert_called_once_with(*expected)
 
-    def test_get_days_in_month_when_day_names_in_wrong_order(self, generate):
-        with pytest.raises(ValueError) as err_info:
-            generate.get_days_in_month(2018, 'January', 'tuesday', 'monday')
-        expected = 'First day provided must be before the second day.'
-        assert expected == str(err_info.value)
+    def test_get_mapped_day_names(self, generate):
+        year = 2019
+        month_value = 2
+        day_names = ['Tuesday', 'Friday']
+        expected = OrderedDict({
+            1: {
+                'dates': [5, 12, 19, 26],
+                'day_name': 'Tuesday',
+                'month_name_value': 2,
+                'year': 2019
+            },
+            4: {
+                'dates': [1, 8, 15, 22],
+                'day_name': 'Friday',
+                'month_name_value': 2,
+                'year': 2019
+            }
+        })
+        actual = generate._get_mapped_day_names(day_names, year, month_value)
+        assert expected == actual
 
     @pytest.mark.parametrize('expected, day_name', [
         (0, 'Monday'),
@@ -51,12 +63,12 @@ class TestCalender:
         (6, 'Sunday'),
     ])
     def test_get_day_name_value(self, generate, expected, day_name):
-        actual = generate.get_day_name_value(day_name)
+        actual = generate._get_day_name_value(day_name)
         assert expected == actual
 
     def test_get_day_name_value_when_invalid(self, generate):
         with pytest.raises(ValueError) as err_info:
-            generate.get_day_name_value('wrong_val')
+            generate._get_day_name_value('wrong_val')
         expected = "Day name 'wrong_val' not valid"
         assert expected == str(err_info.value)
 
@@ -75,52 +87,16 @@ class TestCalender:
         (12, 'December'),
     ])
     def test_get_month_name_value(self, generate, expected, day_name):
-        actual = generate.get_month_name_value(day_name)
+        actual = generate._get_month_name_value(day_name)
         assert expected == actual
 
     def test_get_month_name_value_when_invalid(self, generate):
         with pytest.raises(ValueError) as err_info:
-            generate.get_month_name_value('wrong_val')
+            generate._get_month_name_value('wrong_val')
         expected = "Month name 'wrong_val' not valid"
         assert expected == str(err_info.value)
 
     def test_get_dates(self, generate):
         expected = [6, 13, 20, 27]
-        actual = generate.get_dates(2018, 11, 8)
-        assert expected == actual
-
-    def test_format_date_with_suffix(self, generate):
-        expected = ['1st', '2nd', '3rd', '4th', '30th']
-        input_list = [1, 2, 3, 4, 30]
-        actual = generate.format_dates_with_suffix(input_list)
-        assert expected == actual
-
-    @pytest.mark.parametrize('day_num, expected', [
-        (1, '1st'),
-        (2, '2nd'),
-        (3, '3rd'),
-        (4, '4th'),
-        (5, '5th'),
-        (6, '6th'),
-        (7, '7th'),
-        (8, '8th'),
-        (9, '9th'),
-        (10, '10th'),
-        (11, '11th'),
-        (12, '12th'),
-        (13, '13th'),
-        (14, '14th'),
-        (15, '15th'),
-        (16, '16th'),
-        (17, '17th'),
-        (18, '18th'),
-        (19, '19th'),
-        (20, '20th'),
-        (21, '21st'),
-        (22, '22nd'),
-        (23, '23rd'),
-        (24, '24th'),
-    ])
-    def test_get_day_with_suffix(self, generate, day_num, expected):
-        actual = generate.get_day_with_suffix(day_num)
+        actual = generate._get_dates(2018, 11, 8)
         assert expected == actual
