@@ -8,5 +8,8 @@ class TestRota:
     def generate(self):
         return Rota
 
-    def test_run(self):
+    def test_parse_args(self):
+        pass
+
+    def test_generate(self):
         pass
