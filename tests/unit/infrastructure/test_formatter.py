@@ -1,41 +1,36 @@
 from collections import OrderedDict
+from typing import List
+from unittest.mock import Mock
 
 import pytest
 
-from generate.spreadsheet import Spreadsheet
+from service.infrastructure.formatter import TableFormatter
 
 
-class TestSpreadsheet:
+class TestTableFormatter:
     @pytest.fixture()
-    def generate(self):
-        return Spreadsheet()
+    def formatter(self):
+        return TableFormatter()
 
-    def test_get_grid(self, generate, mocker):
-        header = ['', 'monday', '', 'tuesday']
-        suffixed_dates = [
+    def test_format_column_names(self, formatter):
+        expected: List[str] = ['', 'Tuesday', '', 'Friday']
+        actual = formatter.format_column_names(['tuesday', 'friday'])
+        assert actual == expected
+
+    def test_format_columns(self, monkeypatch, formatter):
+        mock_get_suffixed_day_dates = Mock(return_value=[
             ['1st', '7th'],
             ['2nd', '8th']
-        ]
-        mocker.patch.object(generate, '_get_header', return_value=header)
-        mocker.patch.object(generate, '_get_suffixed_day_dates', return_value=suffixed_dates)
+        ])
+        monkeypatch.setattr(target=formatter, name='_get_suffixed_day_dates', value=mock_get_suffixed_day_dates)
 
-        expected = [
-            ['', 'monday', '', 'tuesday'],
-            ['1st', '', '2nd', ''],
-            ['7th', '', '8th', '']
-        ]
-        actual = generate.get_grid([])
-        assert expected == actual
-
-    def test_get_header(self, generate):
-        month = OrderedDict({
-            1: {'day_name': 'monday'},
-            2: {'day_name': 'tuesday'}
-        })
-
-        expected = ['', 'monday', '', 'tuesday']
-        actual = generate._get_header(month)
-
+        expected = (
+            [
+                ['1st', '', '2nd', ''],
+                ['7th', '', '8th', '']
+            ]
+        )
+        actual = formatter.format_columns([])
         assert expected == actual
 
     @pytest.mark.parametrize('month, expected', [
@@ -69,16 +64,23 @@ class TestSpreadsheet:
         }), [
              ['1st', '8th', '15th', '22nd', '29th']
          ]),
-
     ])
-    def test_get_suffixed_day_dates(self, generate, month, expected):
-        actual = generate._get_suffixed_day_dates(month)
+    def test_get_suffixed_day_dates(self, formatter, month, expected):
+        actual = formatter._get_suffixed_day_dates(month)
         assert expected == actual
 
-    def test_format_date_with_suffix(self, generate):
+    @pytest.mark.parametrize('year, month_name_value, dates, expected', [
+        (2019, 2, [5, 12, 19, 26], True),
+        (2019, 2, [1, 8, 15, 22, 29], False)
+    ])
+    def test_should_pad_start_of_date_range(self, formatter, year, month_name_value, dates, expected):
+        actual = formatter._should_pad_start_of_date_range(year=year, month_name_value=month_name_value, dates=dates)
+        assert actual == expected
+
+    def test_format_date_with_suffix(self, formatter):
         expected = ['1st', '2nd', '3rd', '4th', '30th']
         input_list = [1, 2, 3, 4, 30]
-        actual = generate._format_dates_with_suffix(input_list)
+        actual = formatter._format_dates_with_suffix(input_list)
         assert expected == actual
 
     @pytest.mark.parametrize('day_num, expected', [
@@ -107,9 +109,6 @@ class TestSpreadsheet:
         (23, '23rd'),
         (24, '24th'),
     ])
-    def test_get_day_with_suffix(self, generate, day_num, expected):
-        actual = generate._get_day_with_suffix(day_num)
+    def test_get_day_with_suffix(self, formatter, day_num, expected):
+        actual = formatter._get_day_with_suffix(day_num)
         assert expected == actual
-
-    def test_write_to_xlsm(self):
-        pass

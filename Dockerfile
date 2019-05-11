@@ -1,32 +1,29 @@
-FROM python:3.7.1-alpine as app
+FROM python:3.7-slim-stretch
 
-RUN mkdir /app
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    POETRY_VERSION=0.12.12
+
+RUN groupadd -g 999 app && \
+    useradd -r -u 999 -g app app
+
+RUN pip install "poetry==$POETRY_VERSION"
 
 WORKDIR /app
 
-RUN apk update \
-    && apk upgrade \
-    && apk add --no-cache bash
+COPY poetry.lock pyproject.toml /app/
 
-COPY requirements/src.txt /app/requirements.txt
+COPY service /app/service/
 
-RUN pip install --no-cache-dir -r requirements.txt \
-    && rm requirements.txt
+RUN poetry config settings.virtualenvs.create false \
+    && poetry build \
+    && pip install dist/*.whl \
+    && rm dist -rf
 
-COPY src /app/src/
+USER app
 
-COPY app.py setup.py /app/
-
-RUN pip install --no-cache-dir -e .
-
-ENTRYPOINT ["python", "app.py"]
-
-
-FROM app as tests
-
-COPY requirements/tests.txt /app/requirements.txt
-
-RUN pip install --no-cache-dir -r requirements.txt \
-    && rm requirements.txt
-
-COPY tests /app/tests/
+ENTRYPOINT ["python", "-m", "service.app"]

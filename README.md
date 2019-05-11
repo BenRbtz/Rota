@@ -1,18 +1,22 @@
-# How to run application (via src)
-pip install -r requirements/src.txt
-pip install -e .
-python app.py -d  Monday Thursday -m March
+# Rota Generator
+## About
+This project is used to generate rota for specified days within a month.
 
-# How to run app (via Docker)
-docker container run -it --rm -v /tmp:/tmp rota -d Monday -m March -f /tmp/file.xlsm
+## File Structure
+Hexagonal architecture is used with the following naming conventions inside the `service` catalogue:
+* `business logic` - responsible for generating data that would be inserted into the rota
+* `infrastructure` - responsible for the frameworks, technologies, etc that displays the rota
+* `ports` - code responsible for connection with external layers of application
 
-
-# Application argument options
--f or --file_name  to set the output spreadsheet name (optional)
-
--y or --year       to set rota year (optional)
-
--m or --month_name to set rota month (required)
-
--d or --day_names  to set rota days of week (required)
+## App
+### How to run
+1. Build the Docker image: `docker image build . -t rota`
+2. Run Docker image: `docker container run -it --rm -v /tmp:/tmp rota -d Monday -m March -f /tmp/file.xlsm`
+### Argument Options  
+| Option | Description | required | default value | allow multiple values | Example |
+|:------:|:-----------:|:--------:|:-------:|:---------------------:|:-------:|
+|--day_names, -d  | Day names to create rota for                             | yes |  none          | yes | Tuesday |
+|--month_name, -m | Name of month to create rota for                         | yes |  none          | no  | February |
+|--year, -y       | Year for rota                                            | yes | $CURRENT_YEAR  | no  |   2019 |
+|--file_name, -f  | Directory and file name to write the spreadsheet         | no  | $PWD/rota.xlsx | no  | /tmp/rota.xlsx |
 
