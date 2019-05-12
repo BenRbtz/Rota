@@ -22,7 +22,8 @@ COPY service /app/service/
 RUN poetry config settings.virtualenvs.create false \
     && poetry build \
     && pip install dist/*.whl \
-    && rm dist -rf
+    && rm dist -rf \
+    && rm /app/ -rf
 
 USER app
 

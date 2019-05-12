@@ -1,5 +1,7 @@
 from collections import namedtuple
 
+from typing import Any
+
 
 class UserInputPort:
     RotaInput = namedtuple('RotaInput', 'file_name year month_name day_names')
@@ -16,10 +18,10 @@ class DataGeneratorPort:
 
 
 class TableFormatPort:
-    def format_column_names(self, columns, *args, **kwargs) -> list:
+    def format_column_names(self, columns: list, *args, **kwargs) -> list:
         pass
 
-    def format_columns(self, rows, *args, **kwargs) -> list:
+    def format_columns(self, rows: Any, *args, **kwargs) -> list:
         pass
 
 

@@ -1,94 +1,120 @@
-from collections import OrderedDict
 from datetime import date, timedelta
+from operator import attrgetter
+from typing import List
 
 from service.ports.ports import DataGeneratorPort
 
-day_map = {
-    'monday': 0,
-    'tuesday': 1,
-    'wednesday': 2,
-    'thursday': 3,
-    'friday': 4,
-    'saturday': 5,
-    'sunday': 6,
-}
 
-month_map = {
-    'january': 1,
-    'february': 2,
-    'march': 3,
-    'april': 4,
-    'may': 5,
-    'june': 6,
-    'july': 7,
-    'august': 8,
-    'september': 9,
-    'october': 10,
-    'november': 11,
-    'december': 12,
-}
+class Day:
+    map = {
+        'monday': 0,
+        'tuesday': 1,
+        'wednesday': 2,
+        'thursday': 3,
+        'friday': 4,
+        'saturday': 5,
+        'sunday': 6,
+    }
+
+    def __init__(self, name: str):
+        self.name = name.lower()
+
+        if self.name not in self.map:
+            raise ValueError(f'\'{self.name}\' is not a valid day')
+
+    def __eq__(self, other) -> bool:
+        return self.name == other.name
+
+    def __ne__(self, other) -> bool:
+        return self.name != other.name
+
+    def __hash__(self) -> int:
+        return hash(self.name)
+
+    @property
+    def value(self) -> int:
+        return self.map[self.name]
+
+    def dates(self, year: int, month_value: int) -> List[int]:
+        d = date(year=year, month=month_value, day=1)
+        d += timedelta(days=self.value - d.weekday())
+
+        if d.month != month_value:
+            d += timedelta(days=7)
+
+        dates: List[int] = []
+        while d.month == month_value:
+            dates.append(d.day)
+            d += timedelta(days=7)
+
+        return dates
 
 
-class Month(DataGeneratorPort):
+class Days:
+    def __init__(self, names: List[str]):
+        new_days: List[Day] = []
+        for name in names:
+            new_days.append(Day(name=name))
+
+        self.days = sorted(set(new_days), key=attrgetter('value'))
+
+    def __iter__(self) -> iter:
+        return iter(self.days)
+
+    @property
+    def names(self) -> List[str]:
+        names: List[str] = []
+        for day in self.days:
+            names.append(day.name)
+        return names
+
+    def dates(self, year: int, month_value: int) -> List[List[int]]:
+        dates: List[List[int]] = []
+        for day in self.days:
+            day_dates = day.dates(year=year, month_value=month_value)
+            dates.append(day_dates)
+        return dates
+
+
+class Month:
+    map = {
+        'january': 1,
+        'february': 2,
+        'march': 3,
+        'april': 4,
+        'may': 5,
+        'june': 6,
+        'july': 7,
+        'august': 8,
+        'september': 9,
+        'october': 10,
+        'november': 11,
+        'december': 12,
+    }
+
+    def __init__(self, year: int, name: str, days: Days):
+        self.year = year
+        self.name = name.lower()
+        self.days = days
+
+        if self.name not in self.map:
+            raise ValueError(f'\'{self.name}\' is not a valid month')
+
+    def __iter__(self) -> iter:
+        return iter(self.days)
+
+    @property
+    def value(self) -> int:
+        return self.map[self.name]
+
+
+class MonthGenerator(DataGeneratorPort):
     def generate(self, *args, **kwargs) -> DataGeneratorPort.Table:
         year = kwargs['year']
         month_name = kwargs['month_name']
         day_names = kwargs['day_names']
 
-        day_names = get_valid_day_names(day_names=day_names)
+        days = Days(names=day_names)
+        month = Month(year=year, name=month_name, days=days)
 
-        month = get_mapped_day_names(year=year, month_name=month_name, day_names=day_names)
-
-        return DataGeneratorPort.Table(columns=day_names, rows=month)
-
-
-def get_valid_day_names(day_names):
-    return set([day_name.lower() for day_name in day_names])
-
-
-def get_mapped_day_names(year, month_name, day_names):
-    month_name_value = get_month_name_value(month_name)
-
-    mapped_day_names = {}
-    for day_name in day_names:
-        day_name_value = get_day_name_value(day_name)
-        day_dates = get_dates(year, month=month_name_value, day_of_week=day_name_value)
-
-        mapped_day_names[day_name_value] = {
-            'dates': day_dates,
-            'month_name_value': month_name_value,
-            'year': year
-        }
-
-    sorted_mapped_day_names = OrderedDict(sorted(mapped_day_names.items()))
-
-    return sorted_mapped_day_names
-
-
-def get_month_name_value(month_name):
-    month_name = month_name.lower()
-    if month_name not in month_map:
-        raise ValueError(f"Month name '{month_name}' not valid")
-    return month_map[month_name]
-
-
-def get_day_name_value(day_name):
-    day_name = day_name.lower()
-    if day_name not in day_map:
-        raise ValueError(f"Day name '{day_name}' not valid")
-    return day_map[day_name]
-
-
-def get_dates(year, month, day_of_week):
-    d = date(year, month, 1)
-    d += timedelta(days=day_of_week - d.weekday())
-
-    if d.month < month:
-        d += timedelta(days=7)
-
-    dates = []
-    while d.month == month:
-        dates.append(d.day)
-        d += timedelta(days=7)
-
-    return dates
+        return DataGeneratorPort.Table(columns=days.names, rows=month)

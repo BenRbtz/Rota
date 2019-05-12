@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from unittest.mock import Mock
 
 import pytest
@@ -6,108 +5,123 @@ import pytest
 from service.business_logic import calender
 
 
+class TestDay:
+    def test__init_when_invalid(self):
+        with pytest.raises(ValueError) as error_info:
+            calender.Day(name='Fakeday')
+        assert '\'fakeday\' is not a valid day' in str(error_info.value)
+
+    def test__eq_when_equal(self):
+        day1 = calender.Day(name='Monday')
+        day2 = calender.Day(name='Monday')
+        assert day1 == day2
+
+    def test__eq_when_not_equal(self):
+        day1 = calender.Day(name='Monday')
+        day2 = calender.Day(name='Tuesday')
+        assert day1 != day2
+
+    def test_support_hash(self):
+        day1 = calender.Day(name='Monday')
+        day2 = calender.Day(name='Monday')
+        days = {day1, day2}
+        assert days == {day1}
+
+    def test_name(self):
+        assert calender.Day(name='Monday').name == 'monday'
+
+    @pytest.mark.parametrize('name, expected', [
+        ('Monday', 0),
+        ('Tuesday', 1),
+        ('Wednesday', 2),
+        ('Thursday', 3),
+        ('Friday', 4),
+        ('Saturday', 5),
+        ('Sunday', 6),
+    ])
+    def test_value(self, name, expected):
+        assert calender.Day(name=name).value == expected
+
+    @pytest.mark.parametrize('year, month_value, day_name, expected', [
+        (2019, 1, 'Monday', [7, 14, 21, 28]),
+        (2019, 1, 'Tuesday', [1, 8, 15, 22, 29]),
+        (2019, 2, 'Tuesday', [5, 12, 19, 26]),
+    ])
+    def test_dates(self, year, month_value, day_name, expected):
+        assert calender.Day(name=day_name).dates(year=year, month_value=month_value) == expected
+
+
+class TestDays:
+    def test_init_when_string_list_given(self):
+        calender.Days(names=['Monday', 'Tuesday'])
+
+    def test_iter(self):
+        expected = ['tuesday', 'monday']
+        days = calender.Days(names=expected)
+        assert hasattr(days, '__iter__')
+        for day in days:
+            assert day.name == expected.pop()
+
+        assert not expected
+
+    def test_names(self):
+        expected = ['monday', 'tuesday']
+        assert calender.Days(names=['Tuesday', 'Monday']).names == expected
+
+    def test_dates(self):
+        expected = [
+            [7, 14, 21, 28],
+            [1, 8, 15, 22, 29]
+        ]
+        assert calender.Days(names=['Tuesday', 'Monday']).dates(year=2019, month_value=1) == expected
+
+
 class TestMonth:
+    def test_init_when_invalid_month(self):
+        with pytest.raises(ValueError) as error_info:
+            calender.Month(year=2019, name='FakeMonth', days=Mock())
+        assert '\'fakemonth\' is not a valid month' in str(error_info.value)
+
+    def test_iter(self):
+        expected = ['tuesday', 'monday']
+        days = calender.Month(year=2019, name='January', days=calender.Days(names=['Tuesday', 'Monday']))
+        assert hasattr(days, '__iter__')
+        for day in days:
+            assert day.name == expected.pop()
+
+        assert not expected
+
+    def test_name(self):
+        expected = 'january'
+        assert calender.Month(year=2019, name='January', days=Mock()).name == expected
+
+    @pytest.mark.parametrize('name, expected', [
+        ('January', 1),
+        ('February', 2),
+        ('March', 3),
+        ('April', 4),
+        ('May', 5),
+        ('June', 6),
+        ('July', 7),
+        ('August', 8),
+        ('September', 9),
+        ('October', 10),
+        ('November', 11),
+        ('December', 12),
+    ])
+    def test_value(self, name, expected):
+        calender.Month(year=2019, name=name, days=Mock())
+
+
+class TestMonthGenerator:
     @pytest.fixture()
     def month(self):
-        return calender.Month()
+        return calender.MonthGenerator()
 
-    @pytest.mark.parametrize('expected', [
-        (calender.DataGeneratorPort.Table(columns={'tuesday', 'friday'},
-                                          rows={1: {'dates:': {}, 'month_name_value': 1, 'year': 2018}})),
-        (calender.DataGeneratorPort.Table(columns={'tuesday', 'friday'},
-                                          rows={1: {'dates:': {}, 'month_name_value': 1, 'year': 2018}})),
-        (calender.DataGeneratorPort.Table(columns={'tuesday', 'friday'},
-                                          rows={1: {'dates:': {}, 'month_name_value': 1, 'year': 2018}})),
-    ])
-    def test_generate(self, monkeypatch, month, expected):
-        get_valid_day_names = Mock(return_value=expected.columns)
-        mock_get_mapped_day_names = Mock(return_value=expected.rows)
-
-        monkeypatch.setattr(target=calender, name='get_valid_day_names', value=get_valid_day_names)
-        monkeypatch.setattr(target=calender, name='get_mapped_day_names', value=mock_get_mapped_day_names)
-
-        actual = month.generate(year=2018, month_name='January', day_names=['tuesday', 'friday'])
-
-        assert actual == expected
-
-
-@pytest.mark.parametrize('day_names, expected', [
-    (['tuesday', 'friday'], {'tuesday', 'friday'}),
-    (['Friday', 'tuesday', 'friday'], {'tuesday', 'friday'}),
-])
-def test_get_valid_day_names(day_names, expected):
-    actual = calender.get_valid_day_names(day_names=day_names)
-    assert actual == expected
-
-
-def test_get_mapped_day_names():
-    year = 2019
-    month_name = 'February'
-    day_names = ['Tuesday', 'Friday']
-    expected = OrderedDict({
-        1: {
-            'dates': [5, 12, 19, 26],
-            'month_name_value': 2,
-            'year': 2019
-        },
-        4: {
-            'dates': [1, 8, 15, 22],
-            'month_name_value': 2,
-            'year': 2019
-        }
-    })
-    actual = calender.get_mapped_day_names(year=year, month_name=month_name, day_names=day_names)
-    assert expected == actual
-
-
-@pytest.mark.parametrize('expected, day_name', [
-    (0, 'Monday'),
-    (1, 'Tuesday'),
-    (2, 'Wednesday'),
-    (3, 'Thursday'),
-    (4, 'Friday'),
-    (5, 'Saturday'),
-    (6, 'Sunday'),
-])
-def test_get_day_name_value(expected, day_name):
-    actual = calender.get_day_name_value(day_name)
-    assert expected == actual
-
-
-def test_get_day_name_value_when_invalid():
-    with pytest.raises(ValueError) as err_info:
-        calender.get_day_name_value('wrong_val')
-    expected = "Day name 'wrong_val' not valid"
-    assert expected == str(err_info.value)
-
-
-@pytest.mark.parametrize('expected, day_name', [
-    (1, 'January'),
-    (2, 'February'),
-    (3, 'March'),
-    (4, 'April'),
-    (5, 'May'),
-    (6, 'June'),
-    (7, 'July'),
-    (8, 'August'),
-    (9, 'September'),
-    (10, 'October'),
-    (11, 'November'),
-    (12, 'December'),
-])
-def test_get_month_name_value(expected, day_name):
-    actual = calender.get_month_name_value(day_name)
-    assert expected == actual
-
-
-def test_get_month_name_value_when_invalid():
-    with pytest.raises(ValueError) as err_info:
-        calender.get_month_name_value('wrong_val')
-    expected = "Month name 'wrong_val' not valid"
-    assert expected == str(err_info.value)
-
-
-def test_get_dates():
-    expected = [6, 13, 20, 27]
-    actual = calender.get_dates(2018, 11, 8)
-    assert expected == actual
+    def test_generate(self, month):
+        day_names = ['tuesday', 'friday']
+        month = month.generate(year=2018, month_name='January', day_names=day_names)
+        assert type(month) is calender.DataGeneratorPort.Table
+        assert month.columns == day_names
+        assert month.rows.name == 'january'
+        assert month.rows.year == 2018

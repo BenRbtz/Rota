@@ -1,19 +1,19 @@
-from collections import OrderedDict
 from typing import List
 from unittest.mock import Mock
 
 import pytest
 
-from service.infrastructure.formatter import TableFormatter
+from service.business_logic.calender import Month, Days
+from service.infrastructure.formatter import MonthTableFormatter
 
 
 class TestTableFormatter:
     @pytest.fixture()
     def formatter(self):
-        return TableFormatter()
+        return MonthTableFormatter()
 
     def test_format_column_names(self, formatter):
-        expected: List[str] = ['', 'Tuesday', '', 'Friday']
+        expected: List[str] = [[''], ['Tuesday'], [''], ['Friday']]
         actual = formatter.format_column_names(['tuesday', 'friday'])
         assert actual == expected
 
@@ -30,44 +30,21 @@ class TestTableFormatter:
                 ['7th', '', '8th', '']
             ]
         )
-        actual = formatter.format_columns([])
+        actual = formatter.format_columns(Mock)
         assert expected == actual
 
     @pytest.mark.parametrize('month, expected', [
-        (OrderedDict({
-            1: {
-                'dates': [5, 12, 19, 26],
-                'day_name': 'Tuesday',
-                'month_name_value': 2,
-                'suffixed_day_dates': ['5th', '12th', '19th', '26th'],
-                'year': 2019
-            },
-            4: {
-                'dates': [1, 8, 15, 22],
-                'day_name': 'Friday',
-                'month_name_value': 2,
-                'suffixed_day_dates': ['1st', '8th', '15th', '22nd'],
-                'year': 2019
-            }
-        }), [
-             ['', '5th', '12th', '19th', '26th'],
-             ['1st', '8th', '15th', '22nd', '']
-         ]),
-        (OrderedDict({
-            1: {
-                'dates': [1, 8, 15, 22, 29],
-                'day_name': 'Tuesday',
-                'month_name_value': 2,
-                'suffixed_day_dates': ['1st', '8th', '15th', '22nd', '29th'],
-                'year': 2019
-            },
-        }), [
-             ['1st', '8th', '15th', '22nd', '29th']
-         ]),
+        (Month(year=2019, name='February', days=Days(['Tuesday', 'Friday'])), [
+            ['', '5th', '12th', '19th', '26th'],
+            ['1st', '8th', '15th', '22nd', ''],
+        ]),
+        (Month(year=2019, name='January', days=Days(['Tuesday'])), [
+            ['1st', '8th', '15th', '22nd', '29th'],
+        ]),
     ])
     def test_get_suffixed_day_dates(self, formatter, month, expected):
         actual = formatter._get_suffixed_day_dates(month)
-        assert expected == actual
+        assert actual == expected
 
     @pytest.mark.parametrize('year, month_name_value, dates, expected', [
         (2019, 2, [5, 12, 19, 26], True),

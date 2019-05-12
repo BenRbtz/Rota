@@ -5,11 +5,8 @@ from service.ports.rota import Rota
 
 class TestRota:
     @pytest.fixture()
-    def generate(self):
+    def rota(self):
         return Rota
 
-    def test_parse_args(self):
-        pass
-
-    def test_generate(self):
+    def test_generate(self, rota):
         pass
