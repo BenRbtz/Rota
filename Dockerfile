@@ -20,10 +20,7 @@ COPY poetry.lock pyproject.toml /app/
 COPY service /app/service/
 
 RUN poetry config settings.virtualenvs.create false \
-    && poetry build \
-    && pip install dist/*.whl \
-    && rm dist -rf \
-    && rm /app/ -rf
+    && poetry install --no-dev
 
 USER app
 

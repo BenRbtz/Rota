@@ -2,10 +2,10 @@ from datetime import date, timedelta
 from typing import List
 
 from service.business_logic.calender import Month
-from service.ports.ports import TableFormatPort
+from service.ports.ports import RotaFormatPort
 
 
-class MonthTableFormatter(TableFormatPort):
+class MonthTableFormatter(RotaFormatPort):
     def format_column_names(self, column_names: list, *args, **kwargs) -> list:
         formatted_column_names: List[List[str]] = []
         for column_name in column_names:

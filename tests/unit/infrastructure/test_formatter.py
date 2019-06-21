@@ -17,6 +17,7 @@ class TestTableFormatter:
         actual = formatter.format_column_names(['tuesday', 'friday'])
         assert actual == expected
 
+    # TODO test properly
     def test_format_columns(self, monkeypatch, formatter):
         mock_get_suffixed_day_dates = Mock(return_value=[
             ['1st', '7th'],
@@ -30,7 +31,7 @@ class TestTableFormatter:
                 ['7th', '', '8th', '']
             ]
         )
-        actual = formatter.format_columns(Mock)
+        actual = formatter.format_columns(rows=Mock)
         assert expected == actual
 
     @pytest.mark.parametrize('month, expected', [

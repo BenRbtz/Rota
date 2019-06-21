@@ -1,6 +1,8 @@
 from collections import namedtuple
+from typing import List
 
-from typing import Any
+from service.business_logic.calender import Month
+from service.business_logic.person import Instructor
 
 
 class UserInputPort:
@@ -10,7 +12,7 @@ class UserInputPort:
         pass
 
 
-class DataGeneratorPort:
+class DateGeneratorPort:
     Table = namedtuple('Table', 'columns rows')
 
     def generate(self, *args, **kwargs) -> Table:
@@ -21,7 +23,7 @@ class TableFormatPort:
     def format_column_names(self, columns: list, *args, **kwargs) -> list:
         pass
 
-    def format_columns(self, rows: Any, *args, **kwargs) -> list:
+    def format_columns(self, month: Month, instructors: List[Instructor], *args, **kwargs) -> list:
         pass
 
 

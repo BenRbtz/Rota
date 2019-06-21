@@ -2,8 +2,6 @@ from datetime import date, timedelta
 from operator import attrgetter
 from typing import List
 
-from service.ports.ports import DataGeneratorPort
-
 
 class Day:
     map = {
@@ -106,15 +104,3 @@ class Month:
     @property
     def value(self) -> int:
         return self.map[self.name]
-
-
-class MonthGenerator(DataGeneratorPort):
-    def generate(self, *args, **kwargs) -> DataGeneratorPort.Table:
-        year = kwargs['year']
-        month_name = kwargs['month_name']
-        day_names = kwargs['day_names']
-
-        days = Days(names=day_names)
-        month = Month(year=year, name=month_name, days=days)
-
-        return DataGeneratorPort.Table(columns=days.names, rows=month)
