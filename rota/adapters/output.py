@@ -1,6 +1,6 @@
 from xlsxwriter import Workbook
 
-from service.ports.ports import OutputPort
+from rota.domain.ports import OutputPort
 
 
 class Spreadsheet(OutputPort):

@@ -1,8 +1,8 @@
 from collections import namedtuple
 from typing import List
 
-from service.business_logic.calender import Month
-from service.business_logic.person import Instructor
+from rota.domain.models.calender import Month
+from rota.domain.models.person import Instructor
 
 
 class UserInputPort:
@@ -19,7 +19,12 @@ class DateGeneratorPort:
         pass
 
 
-class TableFormatPort:
+class NameGeneratorPort:
+    def generate(self, *args, **kwargs) -> List[Instructor]:
+        pass
+
+
+class RotaFormatPort:
     def format_column_names(self, columns: list, *args, **kwargs) -> list:
         pass
 

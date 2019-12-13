@@ -3,10 +3,9 @@
 This project is used to generate rota for specified days within a month.
 
 ## File Structure
-Hexagonal architecture is used with the following naming conventions inside the `service` catalogue:
-* `business logic` - responsible for generating data that would be inserted into the rota
-* `infrastructure` - responsible for the frameworks, technologies, etc that displays the rota
-* `ports` - code responsible for connection with external layers of application
+Hexagonal architecture is used with the following naming conventions inside the `rota` catalogue:
+* `domain` - responsible for generating data that would be inserted into the rota
+* `adapters` - responsible for the frameworks, technologies, etc that displays the rota
 
 ## App
 ### How to run

@@ -1,8 +1,8 @@
 from datetime import date, timedelta
 from typing import List
 
-from service.business_logic.calender import Month
-from service.ports.ports import RotaFormatPort
+from rota.domain.models.calender import Month
+from rota.domain.ports import RotaFormatPort
 
 
 class MonthTableFormatter(RotaFormatPort):
@@ -53,6 +53,8 @@ class MonthTableFormatter(RotaFormatPort):
         d = date(year, month_name_value, 1)
         first_date_from_date_range, *_ = dates
         last_day_of_first_week_in_month = timedelta(days=6 - d.weekday()).days
+        if last_day_of_first_week_in_month == 0:
+            last_day_of_first_week_in_month = 30
         return first_date_from_date_range > last_day_of_first_week_in_month
 
     def _format_dates_with_suffix(self, dates: List[int]) -> List[str]:

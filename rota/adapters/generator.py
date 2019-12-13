@@ -1,9 +1,9 @@
 from csv import DictReader
 from typing import List
 
-from service.business_logic.calender import Days, Month
-from service.business_logic.person import Instructor
-from service.ports.ports import NameGeneratorPort, DateGeneratorPort
+from rota.domain.models.calender import Days, Month
+from rota.domain.models.person import Instructor
+from rota.domain.ports import NameGeneratorPort, DateGeneratorPort
 
 
 class NamesGenerator(NameGeneratorPort):

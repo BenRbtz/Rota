@@ -3,8 +3,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from service.business_logic.calender import Month, Days
-from service.infrastructure.formatter import MonthTableFormatter
+from rota.adapters.formatter import MonthTableFormatter
+from rota.domain.models.calender import Month, Days
 
 
 class TestTableFormatter:
@@ -41,6 +41,10 @@ class TestTableFormatter:
         ]),
         (Month(year=2019, name='January', days=Days(['Tuesday'])), [
             ['1st', '8th', '15th', '22nd', '29th'],
+        ]),
+        (Month(year=2019, name='December', days=Days(['Monday', 'Thursday'])), [
+            ['2nd', '9th', '16th', '23rd', '30th'],
+            ['5th', '12th', '19th', '26th', ''],
         ]),
     ])
     def test_get_suffixed_day_dates(self, formatter, month, expected):

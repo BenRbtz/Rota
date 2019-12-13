@@ -2,7 +2,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from service.business_logic.calender import Day, Month, Days
+from rota.domain.models.calender import Day, Month, Days
 
 
 class TestDay:

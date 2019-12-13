@@ -1,8 +1,8 @@
 import pytest
 
-from service.business_logic.person import Instructor
-from service.ports.generator import NamesGenerator, MonthGenerator
-from service.ports.ports import DateGeneratorPort
+from rota.adapters.generator import NamesGenerator, MonthGenerator
+from rota.domain.models.person import Instructor
+from rota.domain.ports import DateGeneratorPort
 
 
 class TestMonthGenerator:

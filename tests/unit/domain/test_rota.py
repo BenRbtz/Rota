@@ -1,6 +1,6 @@
 import pytest
 
-from service.ports.rota import Rota
+from rota.domain.rota import Rota
 
 
 class TestRota:

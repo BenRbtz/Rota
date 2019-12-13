@@ -125,3 +125,4 @@ dmypy.json
 # Custom
 *.xlsx
 .idea
+.DS_Store

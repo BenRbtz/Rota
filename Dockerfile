@@ -1,4 +1,4 @@
-FROM python:3.7-slim-stretch
+FROM python:3.8-slim
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONUNBUFFERED=1 \
@@ -6,7 +6,7 @@ ENV PYTHONFAULTHANDLER=1 \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=0.12.12
+    POETRY_VERSION=1.0.0
 
 RUN groupadd -g 999 app && \
     useradd -r -u 999 -g app app
@@ -17,11 +17,11 @@ WORKDIR /app
 
 COPY poetry.lock pyproject.toml /app/
 
-COPY service /app/service/
+COPY rota /app/rota/
 
-RUN poetry config settings.virtualenvs.create false \
+RUN poetry config virtualenvs.create false \
     && poetry install --no-dev
 
 USER app
 
-ENTRYPOINT ["python", "-m", "service.app"]
+ENTRYPOINT ["python", "-m", "rota.app"]

@@ -1,4 +1,4 @@
-from service.ports.ports import UserInputPort, DateGeneratorPort, RotaFormatPort, OutputPort
+from rota.domain.ports import UserInputPort, DateGeneratorPort, RotaFormatPort, OutputPort
 
 
 class Rota:
