@@ -1,15 +1,15 @@
 [tool.poetry]
 name = "rota"
 version = "0.1.0"
-description = ""
+description = "Generate Monthly Rotas"
 authors = ["Your Name <you@example.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-xlsxwriter = "^1.2.6"
+xlsxwriter = "^1.2.7"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.3.1"
+pytest = "^5.3.5"
 
 [build-system]
 requires = ["poetry>=0.12"]
