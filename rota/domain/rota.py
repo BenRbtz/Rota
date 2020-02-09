@@ -1,9 +1,12 @@
-from rota.domain.ports import UserInputPort, DateGeneratorPort, RotaFormatPort, OutputPort
+from ports.data_generator import DateGeneratorPort
+from ports.formatter import RotaFormatPort
+from ports.output import OutputPort
+from ports.user_input import UserInputPort
 
 
 class Rota:
-    def __init__(self, user_input: UserInputPort, date_generator: DateGeneratorPort, formatter: RotaFormatPort,
-                 output: OutputPort):
+    def __init__(self, user_input: UserInputPort, date_generator: DateGeneratorPort,
+                 formatter: RotaFormatPort, output: OutputPort):
         self.user_input = user_input
         self.date_generator = date_generator
         self.formatter = formatter

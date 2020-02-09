@@ -1,8 +1,8 @@
 import pytest
 
-from rota.adapters.generator import NamesGenerator, MonthGenerator
+from adapters.driven.generator import NamesGenerator, MonthGenerator
+from ports.data_generator import Table
 from rota.domain.models.person import Instructor
-from rota.domain.ports import DateGeneratorPort
 
 
 class TestMonthGenerator:
@@ -13,7 +13,7 @@ class TestMonthGenerator:
     def test_generate(self, month):
         day_names = ['tuesday', 'friday']
         month = month.generate(year=2018, month_name='January', day_names=day_names)
-        assert type(month) is DateGeneratorPort.Table
+        assert type(month) is Table
         assert month.columns == day_names
         assert month.rows.name == 'january'
         assert month.rows.year == 2018

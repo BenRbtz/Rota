@@ -1,9 +1,10 @@
 from csv import DictReader
 from typing import List
 
+from ports.data_generator import DateGeneratorPort, Table
+from ports.name_generator import NameGeneratorPort
 from rota.domain.models.calender import Days, Month
 from rota.domain.models.person import Instructor
-from rota.domain.ports import NameGeneratorPort, DateGeneratorPort
 
 
 class NamesGenerator(NameGeneratorPort):
@@ -37,7 +38,7 @@ class NamesGenerator(NameGeneratorPort):
 
 
 class MonthGenerator(DateGeneratorPort):
-    def generate(self, *args, **kwargs) -> DateGeneratorPort.Table:
+    def generate(self, *args, **kwargs) -> Table:
         year = kwargs['year']
         month_name = kwargs['month_name']
         day_names = kwargs['day_names']
@@ -45,4 +46,4 @@ class MonthGenerator(DateGeneratorPort):
         days = Days(names=day_names)
         month = Month(year=year, name=month_name, days=days)
 
-        return DateGeneratorPort.Table(columns=days.names, rows=month)
+        return Table(columns=days.names, rows=month)

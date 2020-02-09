@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from rota.adapters.formatter import MonthTableFormatter
+from adapters.driven.formatter import MonthTableFormatter
 from rota.domain.models.calender import Month, Days
 
 
@@ -13,7 +13,7 @@ class TestTableFormatter:
         return MonthTableFormatter()
 
     def test_format_column_names(self, formatter):
-        expected: List[str] = [[''], ['Tuesday'], [''], ['Friday']]
+        expected: List[List[str]] = [[''], ['Tuesday'], [''], ['Friday']]
         actual = formatter.format_column_names(['tuesday', 'friday'])
         assert actual == expected
 

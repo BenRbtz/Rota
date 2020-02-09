@@ -1,18 +1,18 @@
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 
-from rota.domain.ports import UserInputPort
+from ports.user_input import UserInputPort, RotaInput
 
 
-class ArgUserInput(UserInputPort):
-    def get(self) -> UserInputPort.RotaInput:
+class UserInputArg(UserInputPort):
+    def get(self) -> RotaInput:
         args = self.arg_parse()
         file_name = args.file_name
         year = args.year
         month_name = args.month_name
         day_names = args.day_names
 
-        return UserInputPort.RotaInput(file_name=file_name, year=year, month_name=month_name, day_names=day_names)
+        return RotaInput(file_name=file_name, year=year, month_name=month_name, day_names=day_names)
 
     @staticmethod
     def arg_parse() -> Namespace:

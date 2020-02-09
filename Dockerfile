@@ -6,7 +6,7 @@ ENV PYTHONFAULTHANDLER=1 \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=1.0.0
+    POETRY_VERSION=1.0.3
 
 RUN groupadd -g 999 app && \
     useradd -r -u 999 -g app app

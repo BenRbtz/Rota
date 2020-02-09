@@ -1,8 +1,8 @@
 from datetime import date, timedelta
 from typing import List
 
+from ports.formatter import RotaFormatPort
 from rota.domain.models.calender import Month
-from rota.domain.ports import RotaFormatPort
 
 
 class MonthTableFormatter(RotaFormatPort):
