@@ -5,4 +5,4 @@ install:
 	poetry install --no-dev
 
 test-unit: install-dev
-	poetry run pytest
+	poetry run pytest tests/unit/
