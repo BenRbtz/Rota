@@ -15,13 +15,11 @@ RUN pip install "poetry==$POETRY_VERSION"
 
 WORKDIR /app
 
-COPY poetry.lock pyproject.toml /app/
-
+COPY Makefile poetry.lock pyproject.toml /app/
 COPY rota /app/rota/
 
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-dev
+RUN make install
 
 USER app
 
-ENTRYPOINT ["python", "-m", "rota.app"]
+ENTRYPOINT ["python", "-m", "rota.adapters.driver.app"]
