@@ -1,8 +1,9 @@
-install-dev:
-	poetry install
+PYTHON_VERSION = "python3.8"
+ENV = "prod"
 
 install:
-	poetry install --no-dev
+	poetry env use ${PYTHON_VERSION}
+	poetry install $(test ${ENV} != "dev" && echo "--no-dev")
 
-test-unit: install-dev
+tests-unit:
 	poetry run pytest tests/unit/
