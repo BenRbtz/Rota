@@ -1,14 +1,7 @@
-# Rota Generator
-## About
-This project is used to generate rota for specified days within a month.
+# Rota
+Rota is designed to generate new rotas for a month with specified days 
 
-## File Structure
-Hexagonal architecture is used with the following naming conventions inside the `rota` catalogue:
-* `domain` - responsible for generating data that would be inserted into the rota
-* `adapters` - responsible for the frameworks, technologies, etc that displays the rota
-
-## App
-### How to run
+## How to run
 1. Build the Docker image: `docker image build . -t rota`
 2. Run Docker image: `docker container run -it --rm -v /tmp:/tmp rota -d Monday -m March -f /tmp/file.xlsm`
 ### Argument Options  
