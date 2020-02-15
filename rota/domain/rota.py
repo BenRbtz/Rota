@@ -1,27 +1,20 @@
+from typing import List
+
 from rota.ports.data_generator import DateGeneratorPort
 from rota.ports.formatter import RotaFormatPort
-from rota.ports.output import OutputPort
-from rota.ports.user_input import UserInputPort
+from rota.ports.storage import StoragePort
 
 
 class Rota:
-    def __init__(self, user_input: UserInputPort, date_generator: DateGeneratorPort,
-                 formatter: RotaFormatPort, output: OutputPort):
-        self.user_input = user_input
-        self.date_generator = date_generator
-        self.formatter = formatter
-        self.output = output
+    def __init__(self, date_generator: DateGeneratorPort, formatter: RotaFormatPort,
+                 storage: StoragePort):
+        self._date_generator = date_generator
+        self._formatter = formatter
+        self._storage = storage
 
-    def generate(self, *args, **kwargs):
-        user_input = self.user_input.get()
-
-        dates = self.date_generator.generate(year=user_input.year, month_name=user_input.month_name,
-                                             day_names=user_input.day_names, user_input=user_input, *args, **kwargs)
-
-        formatted_columns = self.formatter.format_column_names(column_names=dates.columns, user_input=user_input,
-                                                               *args, **kwargs)
-        formatted_rows = self.formatter.format_columns(columns=dates.columns, rows=dates.rows, user_input=user_input,
-                                                       *args, **kwargs)
-
-        self.output.create(title=user_input.month_name, column_names=formatted_columns, rows=formatted_rows,
-                           user_input=user_input, *args, **kwargs)
+    def generate(self, file_name: str, year: int, month_name: str, day_names: List[str]) -> None:
+        dates = self._date_generator.generate(year=year, month_name=month_name, day_names=day_names)
+        formatted_columns = self._formatter.format_column_names(column_names=dates.columns)
+        formatted_rows = self._formatter.format_columns(rows=dates.rows)
+        self._storage.save(file_name=file_name, title=month_name, column_names=formatted_columns,
+                           rows=formatted_rows)

@@ -22,4 +22,4 @@ RUN make install
 
 USER app
 
-ENTRYPOINT ["python", "-m", "rota.adapters.driver.app"]
+ENTRYPOINT ["python", "-m", "rota.adapters.driver.cmd"]

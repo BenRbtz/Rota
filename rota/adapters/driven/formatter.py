@@ -6,7 +6,7 @@ from rota.domain.models.calender import Month
 
 
 class MonthTableFormatter(RotaFormatPort):
-    def format_column_names(self, column_names: list, *args, **kwargs) -> list:
+    def format_column_names(self, column_names: list) -> list:
         formatted_column_names: List[List[str]] = []
         for column_name in column_names:
             formatted_column_names.append([''])
@@ -14,7 +14,7 @@ class MonthTableFormatter(RotaFormatPort):
 
         return formatted_column_names
 
-    def format_columns(self, rows: Month, *args, **kwargs) -> list:
+    def format_columns(self, rows: Month) -> list:
         suffixed_day_dates = self._get_suffixed_day_dates(month=rows)
         month = zip(*suffixed_day_dates)
 

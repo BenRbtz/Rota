@@ -1,11 +1,10 @@
 from xlsxwriter import Workbook
 
-from rota.ports.output import OutputPort
+from rota.ports.storage import StoragePort
 
 
-class Spreadsheet(OutputPort):
-    def create(self, title: str, column_names: list, rows: list, *args, **kwargs):
-        file_name = kwargs['user_input'].file_name
+class Spreadsheet(StoragePort):
+    def save(self, file_name: str, title: str, column_names: list, rows: list):
         with Workbook(filename=file_name) as workbook:
             worksheet = workbook.add_worksheet()
             first_row = 0
