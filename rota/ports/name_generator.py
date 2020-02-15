@@ -1,6 +1,6 @@
 from typing import List
 
-from domain.models.person import Instructor
+from rota.domain.models.person import Instructor
 
 
 class NameGeneratorPort:

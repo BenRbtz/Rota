@@ -1,8 +1,8 @@
 from csv import DictReader
 from typing import List
 
-from ports.data_generator import DateGeneratorPort, Table
-from ports.name_generator import NameGeneratorPort
+from rota.ports.data_generator import DateGeneratorPort, Table
+from rota.ports.name_generator import NameGeneratorPort
 from rota.domain.models.calender import Days, Month
 from rota.domain.models.person import Instructor
 

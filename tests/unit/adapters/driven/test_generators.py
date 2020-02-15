@@ -1,7 +1,7 @@
 import pytest
 
-from adapters.driven.generator import NamesGenerator, MonthGenerator
-from ports.data_generator import Table
+from rota.adapters.driven.generator import NamesGenerator, MonthGenerator
+from rota.ports.data_generator import Table
 from rota.domain.models.person import Instructor
 
 

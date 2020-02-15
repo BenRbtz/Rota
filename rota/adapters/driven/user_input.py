@@ -1,7 +1,7 @@
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
 
-from ports.user_input import UserInputPort, RotaInput
+from rota.ports.user_input import UserInputPort, RotaInput
 
 
 class UserInputArg(UserInputPort):

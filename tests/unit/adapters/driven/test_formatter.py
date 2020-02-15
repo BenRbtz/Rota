@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from adapters.driven.formatter import MonthTableFormatter
+from rota.adapters.driven.formatter import MonthTableFormatter
 from rota.domain.models.calender import Month, Days
 
 
